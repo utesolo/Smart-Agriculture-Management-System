@@ -5,11 +5,11 @@ database:
   database: 'smart_farm'
 
 #华为云配置
-access_key: 'KXNGSCSPZEYASG83K0KO'
-secret_key: 'R5Ua0kvFfCnrpuEAKOK3hvG6MdLu6fqGPDsrzIAK'
-instance_id: '7d995429-9bb1-4d05-9912-4ccc5597de50'
-project_id: 'fba31383d97c4f06ac2213ab37db88c9'
-device_id: '662f0aa52ccc1a58388374b1_esp826601s'
-service_id: '662f0aa52ccc1a58388374b1'
-region_id: 'cn-north-4' #华南广州，请填写"cn-south-1"
-endpoint: '65ea3bd221.st1.iotda-app.cn-north-4.myhuaweicloud.com'
+access_key: ''
+secret_key: ''
+instance_id: ''
+project_id: ''
+device_id: ''
+service_id: ''
+region_id: '' #华南广州，请填写"cn-south-1"
+endpoint: ''
