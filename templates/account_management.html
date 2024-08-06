@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Webpixels">
+    <title>智慧大棚控制系统</title>
+    <!-- Preloader -->
+    <style>
+        @keyframes hidePreloader {
+            0% {
+                width: 100%;
+                height: 100%;
+            }
+
+            100% {
+                width: 0;
+                height: 0;
+            }
+        }
+
+        body>div.preloader {
+            position: fixed;
+            background: white;
+            width: 100%;
+            height: 100%;
+            z-index: 1071;
+            opacity: 0;
+            transition: opacity .5s ease;
+            overflow: hidden;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        body:not(.loaded)>div.preloader {
+            opacity: 1;
+        }
+
+        body:not(.loaded) {
+            overflow: hidden;
+        }
+
+        body.loaded>div.preloader {
+            animation: hidePreloader .5s linear .5s forwards;
+        }
+    </style>
+    <script>
+        window.addEventListener("load", function() {
+            setTimeout(function() {
+                document.querySelector('body').classList.add('loaded');
+            }, 300);
+        });
+    </script>
+    <link href="{{ url_for('static', filename='resources/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link rel="icon" href="{{ url_for('static', filename='resources/img/favicon.png') }}" type="image/png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='resources/css/all.min.css') }}">
+    <!-- Quick CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='resources/css/quick-website.css') }}">
+    <script src="{{ url_for('static', filename='resources/js/jquery-3.6.0.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='resources/js/popper.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='resources/js/bootstrap.min.js') }}"></script>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+        <div class="container">
+            <!-- Brand -->
+            <a class="navbar-brand" href="/index.html">
+                <img alt="Image placeholder" src="{{ url_for('static', filename='resources/img/favicon.png') }}" id="navbar-logo">
+            </a>
+            <!-- Toggler -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <!-- Collapse -->
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav mt-4 mt-lg-0 ml-auto">
+                    <li class="nav-item ">
+                        <a class="nav-link" href="/">主页</a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link" href="/greenhouse_management">温室管理</a>
+                    </li>
+                    <li class="nav-item dropdown dropdown-animate" data-toggle="hover">
+                        <a class="nav-link" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">id</a>
+                        <div class="dropdown-menu" aria-labelledby="userDropdown" id="userDropdownMenu">
+                    <!-- 动态生成的内容 -->
+                </div>
+                    </li>
+                    <li class="nav-item dropdown dropdown-animate" data-toggle="hover">
+
+                    </li>
+                </ul>
+                <!-- Mobile button -->
+                <div class="d-lg-none text-center">
+                    <a href="https://webpixels.io/themes/quick-website-ui-kit" class="btn btn-block btn-sm btn-warning">See more details</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- Main content -->
+
+    <div class="container">
+        <h1>账户管理</h1>
+        <form id="accountForm">
+            <div class="form-group">
+                <label for="username">用户名:</label>
+                <input type="text" class="form-control" id="username" name="username" readonly>
+            </div>
+            <div class="form-group">
+                <label for="newPassword">新密码:</label>
+                <input type="password" class="form-control" id="newPassword" name="newPassword">
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">确认新密码:</label>
+                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
+            </div>
+            <button type="submit" class="btn btn-primary">保存更改</button>
+        </form>
+    </div>
+
+    <script src="{{ url_for('static', filename='resources/js/bootstrap.bundle.js') }}"></script>
+    <script src="{{ url_for('static', filename='resources/js/svg-injector.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='resources/js/feather.min.js') }}"></script>
+    <!-- Quick JS -->
+    <script src="{{ url_for('static', filename='resources/js/quick-website.js') }}"></script>
+    <!-- Feather Icons -->
+    <script>
+        feather.replace({
+            'width': '1em',
+            'height': '1em'
+        })
+    </script>
+
+    <script>
+        //头像下拉框
+        function is_logged_in() {
+            // 假设我们有一个函数来检查用户是否已登录
+            $.get('/api/is_logged_in', function(data) {
+                if (data === 'Welcome to the dashboard!') {
+                    // 用户已登录
+                    $('#userDropdownMenu').html(`
+                        <a class="dropdown-item" href="/account_management">账户管理</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item logoutLink" href="/api/logout">注销</a>
+                    `);
+                } else {
+                    // 用户未登录
+                    $('#userDropdownMenu').html(`
+                        <a class="dropdown-item loginLink" href="/login">登录</a>
+                        <a class="dropdown-item registerLink" href="/register">注册</a>
+                    `);
+                }
+            });
+        }
+        // 获取用户名
+        //
+        $(document).ready(function() {
+        $.getJSON('/api/get_name', function(data) {
+            $('#username').val(data.username);
+        }).fail(function() {
+            console.error("Failed to fetch username.");
+        });
+        });
+        // 初始化页面
+        $(function() {
+            is_logged_in(); // 在页面加载时调用以初始化状态
+        });
+
+        // 假设这里有一些 JavaScript 代码来处理表单提交
+        $(function() {
+            $('#accountForm').on('submit', function(event) {
+                event.preventDefault();
+                var username =  $('#username').val();
+                var newPassword = $('#newPassword').val();
+                var confirmPassword = $('#confirmPassword').val();
+                // 发送 AJAX 请求来更新用户信息
+                // 示例：
+                if (newPassword === confirmPassword){
+                    $.ajax({
+                    url: '/api/change_password',
+                    type: 'POST',
+                    data: {
+                        "username":username,
+                        "password":newPassword
+                    },
+                    success: function(response) {
+                        alert('账户信息已更新');
+                    },
+                    error: function(error) {
+                        console.error(error);
+                        alert('更新账户信息时发生错误');
+                    }
+                });
+                }else {alert("两次输入密码不一样")}
+            });
+        });
+
+    </script>
+</body>
+
+</html>

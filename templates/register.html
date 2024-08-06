@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册</title>
+    <style>
+        @keyframes hidePreloader {
+            0% {
+                width: 100%;
+                height: 100%;
+            }
+
+            100% {
+                width: 0;
+                height: 0;
+            }
+        }
+
+        body>div.preloader {
+            position: fixed;
+            background: white;
+            width: 100%;
+            height: 100%;
+            z-index: 1071;
+            opacity: 0;
+            transition: opacity .5s ease;
+            overflow: hidden;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        body:not(.loaded)>div.preloader {
+            opacity: 1;
+        }
+
+        body:not(.loaded) {
+            overflow: hidden;
+        }
+
+        body.loaded>div.preloader {
+            animation: hidePreloader .5s linear .5s forwards;
+        }
+    </style>
+    <script>
+        window.addEventListener("load", function() {
+            setTimeout(function() {
+                document.querySelector('body').classList.add('loaded');
+            }, 300);
+        });
+    </script>
+    <link href="{{ url_for('static', filename='resources/css/bootstrap.min.css') }}" rel="stylesheet">
+    <script src="{{ url_for('static', filename='resources/js/jquery-3.6.0.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='resources/js/popper.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='resources/js/bootstrap.min.js') }}"></script>
+</head>
+<body>
+    <!-- Main content -->
+    <section>
+        <div class="container d-flex flex-column">
+            <div class="row align-items-center justify-content-center min-vh-100">
+                <div class="col-md-6 col-lg-5 col-xl-5 py-6 py-md-0">
+                    <div class="card shadow zindex-100 mb-0">
+                        <div class="card-body px-md-5 py-5">
+                            <div class="mb-5">
+                                <h6 class="h3">注册</h6>
+                                <p class="text-muted mb-0">注册一个账号</p>
+                            </div>
+                            <span class="clearfix"></span>
+                            <form id="registerForm" method="post" action="/api/register">
+                                <div class="form-group">
+                                    <label class="form-control-label">用户名</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i data-feather="user"></i></span>
+                                        </div>
+                                        <input type="text" class="form-control" id="username" name="username" required placeholder="输入您的用户名">
+                                    </div>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <label class="form-control-label">密码</label>
+                                        </div>
+                                        <div class="mb-2">
+                                            <a href="#" class="small text-muted text-underline--dashed border-primary" data-toggle="password-text" data-target="#input-password">显示密码</a>
+                                        </div>
+                                    </div>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i data-feather="key"></i></span>
+                                        </div>
+                                        <input type="password" class="form-control" id="password" name="password" required placeholder="输入您的密码">
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-block btn-primary">注册</button></div>
+                            </form>
+                        </div>
+                        <div class="card-footer px-md-5"><small>已有账号？</small>
+                            <a href="/login" class="small font-weight-bold">点击登录</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="{{ url_for('static', filename='resources/js/bootstrap.bundle.js') }}"></script>
+    <script src="{{ url_for('static', filename='resources/js/svg-injector.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='resources/js/feather.min.js') }}"></script>
+    <!-- Quick JS -->
+    <script src="{{ url_for('static', filename='resources/js/quick-website.js') }}"></script>
+    <!-- Feather Icons -->
+    <script>
+        feather.replace({
+            'width': '1em',
+            'height': '1em'
+        })
+    </script>
+
+    <script>
+        // 头像下拉框
+        function is_logged_in() {
+            // 假设我们有一个函数来检查用户是否已登录
+            $.get('/api/is_logged_in', function(data) {
+                if (data === 'Welcome to the dashboard!') {
+                    // 用户已登录
+                    $('#userDropdownMenu').html(`
+                        <a class="dropdown-item" href="/account_management">账户管理</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item logoutLink" href="/api/logout">注销</a>
+                    `);
+                } else {
+                    // 用户未登录
+                    $('#userDropdownMenu').html(`
+                        <a class="dropdown-item loginLink" href="/login">登录</a>
+                        <a class="dropdown-item registerLink" href="/register">注册</a>
+                    `);
+                }
+            });
+        }
+
+        document.querySelector('[data-toggle="password-text"]').addEventListener('click', function(e) {
+        e.preventDefault();  // 阻止默认行为
+
+        const input = document.querySelector(e.target.dataset.target);
+        if (input.type === 'password') {
+            input.type = 'text';  // 显示密码
+        } else {
+            input.type = 'password';  // 隐藏密码
+        }
+    });
+
+        // 初始化页面
+        $(function() {
+            is_logged_in(); // 在页面加载时调用以初始化状态
+        });
+    </script>
+</body>
+</html>

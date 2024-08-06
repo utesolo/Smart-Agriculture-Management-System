@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Webpixels">
+    <title>智慧大棚控制系统</title>
+    <!-- Preloader -->
+    <style>
+        @keyframes hidePreloader {
+            0% {
+                width: 100%;
+                height: 100%;
+            }
+
+            100% {
+                width: 0;
+                height: 0;
+            }
+        }
+
+        body>div.preloader {
+            position: fixed;
+            background: white;
+            width: 100%;
+            height: 100%;
+            z-index: 1071;
+            opacity: 0;
+            transition: opacity .5s ease;
+            overflow: hidden;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        body:not(.loaded)>div.preloader {
+            opacity: 1;
+        }
+
+        body:not(.loaded) {
+            overflow: hidden;
+        }
+
+        body.loaded>div.preloader {
+            animation: hidePreloader .5s linear .5s forwards;
+        }
+
+        #toggleLightSwitch{
+            padding: 0.375rem 0.75rem;
+        }
+        #toggleFanSwitch{
+            padding: 0.375rem 0.75rem;
+        }
+        #togglePumpSwitch{
+            padding: 0.375rem 0.75rem;
+        }
+        #toggleRoofSwitch{
+            padding: 0.375rem 0.75rem;
+        }
+        #environmentChart {
+            height: 400px; /* 设置一个固定高度 */
+            width: 100%; /* 宽度可以保持不变或者设置成百分比 */
+        }
+    </style>
+    <script>
+        window.addEventListener("load", function() {
+            setTimeout(function() {
+                document.querySelector('body').classList.add('loaded');
+            }, 300);
+        });
+    </script>
+    <link href="{{ url_for('static', filename='resources/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link rel="icon" href="{{ url_for('static', filename='resources/img/favicon.png') }}" type="image/png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='resources/css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='resources/css/bootstrap-datepicker.min.css') }}">
+    <!-- Quick CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='resources/css/quick-website.css') }}">
+    <script src="{{ url_for('static', filename='resources/js/jquery-3.6.0.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='resources/js/popper.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='resources/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='resources/js/bootstrap-datepicker.min.js') }}"></script>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+        <div class="container">
+            <!-- Brand -->
+            <a class="navbar-brand" href="/index.html">
+                <img alt="Image placeholder" src="{{ url_for('static', filename='resources/img/favicon.png') }}" id="navbar-logo">
+            </a>
+            <!-- Toggler -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <!-- Collapse -->
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav mt-4 mt-lg-0 ml-auto">
+                    <li class="nav-item ">
+                        <a class="nav-link" href="/">主页</a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link" href="/greenhouse_management">温室管理</a>
+                    </li>
+                    <li class="nav-item dropdown dropdown-animate" data-toggle="hover">
+                        <a class="nav-link" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">id</a>
+                        <div class="dropdown-menu" aria-labelledby="userDropdown" id="userDropdownMenu">
+                    <!-- 动态生成的内容 -->
+                </div>
+                    </li>
+                    <li class="nav-item dropdown dropdown-animate" data-toggle="hover">
+
+                    </li>
+                </ul>
+                <!-- Mobile button -->
+                <div class="d-lg-none text-center">
+                    <a href="https://webpixels.io/themes/quick-website-ui-kit" class="btn btn-block btn-sm btn-warning">See more details</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- Main content -->
+
+        <div class="container">
+        <h1>温室管理</h1>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        当前环境数据
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <th scope="row">温度</th>
+                                    <td id="temperature"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">湿度</th>
+                                    <td id="humidity"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">光照</th>
+                                    <td id="light"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">土壤湿度</th>
+                                    <td id="soil_moisture"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">空气质量</th>
+                                    <td id="air_quality"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">降雨强度</th>
+                                    <td id="rainfall"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">一氧化碳浓度</th>
+                                    <td id="carbon_monoxide"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        控制面板
+                    </div>
+                    <div class="card-body">
+                        <button type="button" class="btn btn-primary" id="toggleLightSwitch" data-bs-dismiss="modal" data-target="#ledModal">开关灯光</button>
+                        <button type="button" class="btn btn-primary" id="toggleFanSwitch" data-toggle="modal" data-target="#fanModal">风扇开关</button>
+                        <button type="button" class="btn btn-primary" id="togglePumpSwitch" data-toggle="modal" data-target="#pumpModal">水泵开关</button>
+                        <button type="button" class="btn btn-primary" id="toggleRoofSwitch" data-toggle="modal" data-target="#roofModal">棚顶开关</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 添加日期选择器 -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        日期选择器
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="startDatePicker">开始日期:</label>
+                                <input type="text" class="form-control datepicker" id="startDatePicker">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="endDatePicker">结束日期:</label>
+                                <input type="text" class="form-control datepicker" id="endDatePicker">
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button" class="btn btn-primary" id="updateChart">更新图表</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 添加图表容器 -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        环境数据趋势图
+                    </div>
+                    <div class="card-body" id="environmentChartContainer">
+                        <div id="environmentChart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- 控制弹窗 -->
+        <!-- 新增的模态框 -->
+        <div class="modal fade" id="ledModal" tabindex="-1" role="dialog" aria-labelledby="ledModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="ledModalLabel">灯光控制</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="ledControl">选择灯光状态：</label>
+                                <select class="form-control" id="ledControl">
+                                    <option value="on">开</option>
+                                    <option value="auto">自动</option>
+                                    <option value="off">关</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" id="submitLedControl">提交</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="fanModal" tabindex="-1" role="dialog" aria-labelledby="fanModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="fanModalLabel">风扇控制</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="fanControl">选择风扇状态：</label>
+                                <select class="form-control" id="fanControl">
+                                    <option value="on">开</option>
+                                    <option value="auto">自动</option>
+                                    <option value="off">关</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" id="submitFanControl">提交</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="pumpModal" tabindex="-1" role="dialog" aria-labelledby="pumpModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="pumpModalLabel">水泵控制</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="pumpControl">选择水泵状态：</label>
+                                <select class="form-control" id="pumpControl">
+                                    <option value="on">开</option>
+                                    <option value="auto">自动</option>
+                                    <option value="off">关</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" id="submitPumpControl">提交</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="roofModal" tabindex="-1" role="dialog" aria-labelledby="roofModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="roofModalLabel">棚顶控制</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="roofControl">选择棚顶状态：</label>
+                                <select class="form-control" id="roofControl">
+                                    <option value="on">开</option>
+                                    <option value="auto">自动</option>
+                                    <option value="off">关</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" id="submitRoofControl">提交</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    <!-- Core JS  -->
+    <script src="{{ url_for('static', filename='resources/js/bootstrap.bundle.js') }}"></script>
+    <script src="{{ url_for('static', filename='resources/js/svg-injector.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='resources/js/feather.min.js') }}"></script>
+    <!-- Quick JS -->
+    <script src="{{ url_for('static', filename='resources/js/quick-website.js') }}"></script>
+    <!-- Feather Icons -->
+    <script>
+        feather.replace({
+            'width': '1em',
+            'height': '1em'
+        })
+    </script>
+
+    <script>
+        // 头像下拉框
+        function is_logged_in() {
+            // 假设我们有一个函数来检查用户是否已登录
+            $.get('/api/is_logged_in', function(data) {
+                if (data === 'Welcome to the dashboard!') {
+                    // 用户已登录
+                    $('#userDropdownMenu').html(`
+                        <a class="dropdown-item" href="/account_management">账户管理</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item logoutLink" href="/api/logout">注销</a>
+                    `);
+                } else {
+                    // 用户未登录
+                    $('#userDropdownMenu').html(`
+                        <a class="dropdown-item loginLink" href="/login">登录</a>
+                        <a class="dropdown-item registerLink" href="/register">注册</a>
+                    `);
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            // 初始化日期选择器
+            $('.datepicker').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true
+            });
+
+            // 更新图表
+            $('#updateChart').on('click', function() {
+                const startDate = $('#startDatePicker').val();
+                const endDate = $('#endDatePicker').val();
+
+                // 发送 AJAX 请求以获取图表 HTML
+                $.ajax({
+                    url: '/chart',
+                    method: 'GET',
+                    data: { startdata: startDate, enddata: endDate },
+                    success: function(chartHtml) {
+                        $('#environmentChart').html(chartHtml);
+                    },
+                    error: function(error) {
+                        console.error("Failed to update chart:", error);
+                    }
+                });
+            });
+        });
+
+        // 获取环境数据
+        function fetchEnvironmentData() {
+            $.get('/api/environment_data', function(data) {
+                $('#temperature').text(data.temperature + ' °C');
+                $('#humidity').text(data.humidity + ' %');
+                $('#light').text(data.light + ' lux');
+                $('#soil_moisture').text(data.soil_moisture + ' %');
+                $('#carbon_monoxide').text(data.carbon_monoxide + ' %');
+                $('#rainfall').text(data.rainfall + ' %');
+                $('#air_quality').text(data.air_quality + ' %');
+            }).fail(function(error) {
+                console.error('Failed to retrieve data:', error);
+                $('#temperature').text('Error');
+                $('#humidity').text('Error');
+                $('#light').text('Error');
+                $('#soil_moisture').text('Error');
+                $('#carbon_monoxide').text('Error');
+                $('#rainfall').text('Error');
+                $('#air_quality').text('Error');
+            });
+        }
+
+        // 初始化页面
+        $(function() {
+            is_logged_in(); // 在页面加载时调用以初始化状态
+            fetchEnvironmentData(); // 页面加载时立即获取数据
+
+            // 每隔一段时间更新数据
+            setInterval(fetchEnvironmentData, 10000);
+
+            $('#toggleLightSwitch').on('click', function() {
+                console.log("点击了灯光开关按钮");
+                $('#ledModal').modal('show'); // 显示模态框
+            });
+
+            // 灯光控制
+            $('#submitLedControl').on('click', function() {
+                console.log("点击了提交灯光状态按钮");
+                var ledState = $('#ledControl').val();
+                console.log("LED状态:", ledState);
+                var formData = new FormData();
+                formData.append('state', ledState);
+
+                $.ajax({
+                    url: '/api/set_led_state',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        console.log("API响应:", response);
+                        alert("命令下发成功")
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        console.error("请求失败:", xhr.status, textStatus, errorThrown);
+                        try {
+                            var errorResponse = JSON.parse(xhr.responseText);
+                            alert("命令下发失败，错误码:"+errorResponse.code)
+                        } catch (e) {
+                            alert("请求失败: " + errorThrown);
+                        }
+                    }
+                });
+            });
+
+            // 风扇控制
+            $('#toggleFanSwitch').on('click', function() {
+                console.log("点击了风扇开关按钮");
+                $('#fanModal').modal('show');
+            });
+
+            $('#submitFanControl').on('click', function() {
+                console.log("点击了提交风扇状态按钮");
+                var fanState = $('#fanControl').val();
+                console.log("风扇状态:", fanState);
+                var formData = new FormData();
+                formData.append('state', fanState);
+
+                $.ajax({
+                    url: '/api/set_fan_state',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        console.log("API响应:", response);
+                        alert("命令下发成功")
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        console.error("请求失败:", xhr.status, textStatus, errorThrown);
+                        try {
+                            var errorResponse = JSON.parse(xhr.responseText);
+                            alert("命令下发失败，错误码:"+errorResponse.code)
+                        } catch (e) {
+                            alert("请求失败: " + errorThrown);
+                        }
+                    }
+                });
+            });
+
+            // 水泵控制
+            $('#togglePumpSwitch').on('click', function() {
+                console.log("点击了水泵开关按钮");
+                $('#pumpModal').modal('show');
+            });
+
+            $('#submitPumpControl').on('click', function() {
+                console.log("点击了提交水泵状态按钮");
+                var pumpState = $('#pumpControl').val();
+                console.log("水泵状态:", pumpState);
+                var formData = new FormData();
+                formData.append('state', pumpState);
+
+                $.ajax({
+                    url: '/api/set_pump_state',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        console.log("API响应:", response);
+                        alert("命令下发成功")
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        console.error("请求失败:", xhr.status, textStatus, errorThrown);
+                        try {
+                            var errorResponse = JSON.parse(xhr.responseText);
+                            alert("命令下发失败，错误码:"+errorResponse.code)
+                        } catch (e) {
+                            alert("请求失败: " + errorThrown);
+                        }
+                    }
+                });
+            });
+
+            // 棚顶控制
+            $('#toggleRoofSwitch').on('click', function() {
+                console.log("点击了棚顶开关按钮");
+                $('#roofModal').modal('show');
+            });
+
+            $('#submitRoofControl').on('click', function() {
+                console.log("点击了提交棚顶状态按钮");
+                var roofState = $('#roofControl').val();
+                console.log("棚顶状态:", roofState);
+                var formData = new FormData();
+                formData.append('state', roofState);
+
+                $.ajax({
+                    url: '/api/set_roof_state',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        console.log("API响应:", response);
+                        alert("命令下发成功")
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        console.error("请求失败:", xhr.status, textStatus, errorThrown);
+                        try {
+                            var errorResponse = JSON.parse(xhr.responseText);
+                            alert("命令下发失败，错误码:"+errorResponse.code)
+                        } catch (e) {
+                            alert("请求失败: " + errorThrown);
+                        }
+                    }
+                });
+            });
+
+
+        })// 每5秒刷新一次数据
+
+
+    </script>
+</body>
+
+</html>
