@@ -1,8 +1,9 @@
+#数据库应该有一个记录数据的，还需有一个用户库,需根据需要来进行更改
 database:
-  user: 'root'
-  password: '123456'
-  host: 'localhost'
-  database: 'smart_farm'
+  user: '《user》'
+  password: '《password》'
+  host: '《host》'
+  database: '《database》'
 
 #华为云配置
 access_key: ''
