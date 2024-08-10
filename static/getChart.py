@@ -1,17 +1,18 @@
 #getChart.py
+import os
+
 import pandas as pd
 import plotly.graph_objects as go
 from static.util.db_tools import DBTools
 
 
-
-def getchart(startdate,enddate):
+def getchart(startdate, enddate):
     db_tools = DBTools()
     db_tools.connect()
     query = ("SELECT farm_date, temp, humi, light, smoke, soil, carbon_dioxide FROM data_farm "
              "WHERE DATE(farm_date) BETWEEN %s AND %s")
 
-    cursor = db_tools.execute_query(query, (startdate,enddate))
+    cursor = db_tools.execute_query(query, (startdate, enddate))
     columns = [desc[0] for desc in cursor.description]
 
     df = pd.DataFrame(cursor.fetchall(), columns=columns)
@@ -29,3 +30,21 @@ def getchart(startdate,enddate):
     chart = fig.to_html(full_html=False)
 
     return chart
+
+
+def export_to_excel(startdate, enddate):
+    db_tools = DBTools()
+    db_tools.connect()
+    filename = f'{startdate}-{enddate}.xlsx'
+    if os.path.exists(filename) and os.path.isfile(filename):
+        query = ("SELECT farm_date, temp, humi, light, smoke, soil, carbon_dioxide FROM data_farm "
+                 "WHERE DATE(farm_date) BETWEEN %s AND %s")
+
+        cursor = db_tools.execute_query(query, (startdate, enddate))
+        columns = [desc[0] for desc in cursor.description]
+
+        df = pd.DataFrame(cursor.fetchall(), columns=columns)
+
+        # 导出到Excel文件
+        df.to_excel(filename, index=False)
+    return filename

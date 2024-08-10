@@ -202,6 +202,9 @@
                             <div class="col-md-4">
                                 <button type="button" class="btn btn-primary" id="updateChart">更新图表</button>
                             </div>
+                            <div class="col-md-4 mt-2">
+                                <a href="#" id="downloadExcel" class="btn btn-success">下载Excel</a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -402,6 +405,19 @@
                     }
                 });
             });
+        });
+
+        // 下载 Excel 文件
+        $('#downloadExcel').on('click', function(event) {
+            event.preventDefault(); // 阻止默认的超链接行为
+            const startDate = $('#startDatePicker').val();
+            const endDate = $('#endDatePicker').val();
+
+            // 构造带有参数的URL
+            const url = `/api/export-excel?start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}`;
+
+            // 使用隐藏的iframe来触发文件下载
+            $('<iframe>').hide().attr('src', url).appendTo('body');
         });
 
         // 获取环境数据

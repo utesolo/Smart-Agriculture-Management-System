@@ -1,7 +1,7 @@
 import time
 
-from flask import Flask, request, jsonify, render_template, session, redirect, url_for
-from static.getChart import getchart
+from flask import Flask, request, jsonify, render_template, session, redirect, url_for,send_file
+from static.getChart import getchart,export_to_excel
 from static.util.db_tools import DBTools
 from static.login import AuthService
 from static.huawei_iotda_greenhouse import HuaweiIoTDAEnvironment
@@ -181,6 +181,16 @@ def get_name():
     username = auth_service.get_user_name(g_id)[0]['name']
     print(username)
     return jsonify({'username': username})
+
+
+@app.route('/api/export-excel', methods=['GET'])
+def export_excel():
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    print(start_date, end_date)
+    excel_path = export_to_excel(start_date, end_date)
+    print(excel_path)
+    return send_file(excel_path, as_attachment=True, download_name=f'{start_date}-{end_date}.xlsx')
 
 
 if __name__ == '__main__':

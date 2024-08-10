@@ -17,7 +17,7 @@ def load_config(config_file):
 
 
 class DBTools:
-    def __init__(self, config_file='../../config.yaml'):
+    def __init__(self, config_file='../../configtest.yaml'):
         # 加载配置文件
         self.config = load_config(config_file)
         # 初始化数据库连接

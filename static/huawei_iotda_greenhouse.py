@@ -8,7 +8,7 @@ from huaweicloudsdkcore.auth.credentials import DerivedCredentials
 
 class HuaweiIoTDAEnvironment:
     def __init__(self):
-        with open('config.yaml', 'r', encoding='utf-8') as file:
+        with open('configtest.yaml', 'r', encoding='utf-8') as file:
             config = yaml.safe_load(file)
             self.access_key = config['access_key']
             self.secret_key = config['secret_key']
