@@ -1,17 +1,25 @@
-import time
+from flask import request, jsonify, render_template, session, redirect, url_for,send_file
 
-from flask import Flask, request, jsonify, render_template, session, redirect, url_for,send_file
 from static.getChart import getchart,export_to_excel
 from static.util.db_tools import DBTools
 from static.login import AuthService
 from static.huawei_iotda_greenhouse import HuaweiIoTDAEnvironment
+from factory import create_app,scheduler
 
-app = Flask(__name__)
-app.secret_key = '09hxb2PXq31UstkTWtWK3qt136hBoDdbKwOj3Too'
+app = create_app()
 db_tools = DBTools()
 auth_service = AuthService(db_tools)
 db_tools.connect()
 huawei = HuaweiIoTDAEnvironment()
+
+
+# 添加一个路由来检查调度器的状态
+@app.route('/check-scheduler-status')
+def check_scheduler_status():
+    if scheduler.running:
+        return "Scheduler is running."
+    else:
+        return "Scheduler is not running."
 
 
 @app.route('/')
@@ -52,7 +60,7 @@ def api_register():
     username = request.form.get('username')
     password = request.form.get('password')
 
-    result = auth_service.register(username, password)
+    auth_service.register(username, password)
     return redirect(url_for('index'))
 
 
