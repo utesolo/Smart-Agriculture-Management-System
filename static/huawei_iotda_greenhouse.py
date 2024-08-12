@@ -6,6 +6,7 @@ from huaweicloudsdkcore.auth.credentials import BasicCredentials
 from huaweicloudsdkcore.auth.credentials import DerivedCredentials
 
 
+
 class HuaweiIoTDAEnvironment:
     def __init__(self):
         with open('configtest.yaml', 'r', encoding='utf-8') as file:
@@ -78,6 +79,27 @@ class HuaweiIoTDAEnvironment:
         except exceptions.ClientRequestException as e:
             print(f"Error occurred: {e}")
             return e.status_code
+
+    def store_environment_data(self, db_tools,farm_date,g_id):
+        # 查询设备属性
+        request = ShowDeviceShadowRequest()
+        request.device_id = self.device_id
+        response = self.client.show_device_shadow(request)
+        result = response.to_str()
+        shadow_data = json.loads(result)
+        reported_properties = shadow_data['shadow'][0]['reported']['properties']
+
+        # 解析属性数据
+        temperature = reported_properties['wendu']
+        humidity = reported_properties['shidu']
+        light = reported_properties['guang']
+        soil_moisture = reported_properties['turang']
+        carbon_monoxide = reported_properties['CO']
+        rainfall = reported_properties['yudi']
+        air_quality = reported_properties['yanwu']
+
+        insert_query = "INSERT INTO data_farm (temp,humi,light,smoke,soil,carbon_dioxide,farm_date,g_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"
+        db_tools.fetch_data(insert_query,(temperature,humidity,light,air_quality,soil_moisture,carbon_monoxide,farm_date,g_id))
 
 
 if __name__ == '__main__':
