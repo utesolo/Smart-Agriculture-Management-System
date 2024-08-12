@@ -3,3 +3,5 @@
 <h1>config各种配置需自行根据华为云SDK更改
 <h1>个人传感器获取的数据需要在huawei_iotda_greenhouse.py中修改</h1>
 <h1>在使用时请将util中db和华为sdk调用中开启的文件configtest.yaml改为config.yaml</h1>
+本项目使用的外部库有Flask-APScheduler,pymysql,pyyaml,flask,huaweicloudsdkcore,huaweicloudsdkiotda,openpyxl,pandas,ulid-py
+都可直接使用pip进行下载
